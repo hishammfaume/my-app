@@ -112,14 +112,14 @@ function SignupSigninComponent() {
           photoURL: user.photoURL ? user.photoURL : "",
           createdAt,
         });
-        toast.success("User Doc created");
+        //toast.success("User Doc created");
         setLoading(false)
       } catch (e) {
         toast.error(e.message);
         setLoading(false)
       }
     }else{
-        toast.error("UserDOc already exists")
+        //toast.error("UserDOc already exists")
     }
   }
 

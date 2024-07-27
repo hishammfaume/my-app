@@ -141,3 +141,47 @@ input{
 .charts-wrapper .ant-chart {
     margin-bottom: 2rem; /* Space below charts */
 }
+
+
+
+
+.chart-budget-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  padding-right: 2rem; /* Align button with chart component */
+  gap: 10px; /* Space between buttons */
+}
+
+.budget-button, .report-button {
+  background-color: var(--theme);
+  border-color: var(--theme);
+  color: var(--white);
+  font-weight: 600;
+  border-radius: 5px;
+}
+
+.budget-button:hover, .report-button:hover {
+  background-color: darken(var(--theme), 10%);
+  border-color: darken(var(--theme), 10%);
+  color: var(--white);
+}
+
+.current-budgets {
+  margin: 20px 2rem;
+}
+
+.current-budgets h2 {
+  font-size: 1.5rem;
+  color: var(--theme);
+}
+
+.current-budgets ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.current-budgets ul li {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}

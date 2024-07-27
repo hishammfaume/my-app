@@ -1,8 +1,8 @@
 import React from "react";
 import "./styles.css";
-import { Input, Table,Select, Radio } from "antd";
-import searchImg from "../../assets/search.svg"
-import Papa from "papaparse"
+import { Table, Select, Radio } from "antd";
+import searchImg from "../../assets/search.svg";
+import Papa from "papaparse";
 import { toast } from "react-toastify";
 
 function TransactionsTable({ transactions, addTransaction, fetchTransactions }) {
@@ -16,6 +16,11 @@ function TransactionsTable({ transactions, addTransaction, fetchTransactions }) 
       key: "name",
     },
     {
+      title: "Tag",
+      dataIndex: "tag",
+      key: "tag",
+    },
+    {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
@@ -26,11 +31,6 @@ function TransactionsTable({ transactions, addTransaction, fetchTransactions }) 
       key: "type",
     },
     {
-      title: "Tag",
-      dataIndex: "tag",
-      key: "tag",
-    },
-    {
       title: "Date",
       dataIndex: "date",
       key: "date",
@@ -38,7 +38,7 @@ function TransactionsTable({ transactions, addTransaction, fetchTransactions }) 
   ];
 
   let filteredTransactions = transactions.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase()) && item.type.includes(typeFilter)
+    item.name?.toLowerCase().includes(search.toLowerCase()) && item.type.includes(typeFilter)
   );
 
    let sortedTransactions =filteredTransactions.sort((a, b) => {
@@ -110,15 +110,14 @@ function TransactionsTable({ transactions, addTransaction, fetchTransactions }) 
           marginBottom: "1rem",
         }}
       >
-     <div className="input-flex">
-          <img src={searchImg} width="16" />
-         <input
+    <div className="input-flex">
+      <img src={searchImg} width="16" alt="Search" />
+      <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder={"Search by name"}
-        
       />
-        </div>
+    </div>
       
       <Select
           className="select-input"

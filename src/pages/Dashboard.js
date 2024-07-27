@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Cards from "../components/Cards";
-import moment from "moment";
-import { Modal, Button, notification } from "antd";
+import { Button, notification } from "antd";
 import AddExpenseModal from "../components/Modals/addExpense";
 import AddIncomeModal from "../components/Modals/addIncome";
 import BudgetModal from "../components/Modals/BudgetModal";
-import { addDoc, collection, getDocs, query, deleteDoc, doc, writeBatch, setDoc } from "firebase/firestore";
+import ReportModal from "../components/Modals/ReportModal"; // Import the ReportModal component
+import TransactionsTable from "../components/TransactionsTable";
+import { addDoc, collection, doc, getDocs, query, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { toast } from "react-toastify";
-import TransactionsTable from "../components/TransactionsTable";
 import ChartComponent from "../components/Charts";
 import NoTransactions from "../components/NoTransactions/NoTransactions";
+//import './styles.css'; // Import the CSS file for the styles
 
 function Dashboard() {
   const [transactions, setTransactions] = useState([]);
@@ -21,6 +22,7 @@ function Dashboard() {
   const [isExpenseModalVisible, setIsExpenseModalVisible] = useState(false);
   const [isIncomeModalVisible, setIsIncomeModalVisible] = useState(false);
   const [isBudgetModalVisible, setIsBudgetModalVisible] = useState(false);
+  const [isReportModalVisible, setIsReportModalVisible] = useState(false); // State for report modal
   const [income, setIncome] = useState(0);
   const [expense, setExpenses] = useState(0);
   const [totalBalance, setTotalBalance] = useState(0);
@@ -35,6 +37,9 @@ function Dashboard() {
   const showBudgetModal = () => {
     setIsBudgetModalVisible(true);
   };
+  const showReportModal = () => {
+    setIsReportModalVisible(true);
+  };
   const handleExpenseCancel = () => {
     setIsExpenseModalVisible(false);
   };
@@ -43,6 +48,9 @@ function Dashboard() {
   };
   const handleBudgetCancel = () => {
     setIsBudgetModalVisible(false);
+  };
+  const handleReportCancel = () => {
+    setIsReportModalVisible(false);
   };
 
   const onFinish = (values, type) => {
@@ -62,7 +70,6 @@ function Dashboard() {
     try {
       await setDoc(doc(db, `users/${user.uid}/budgets/${expenseType}`), { budget: parseFloat(budget) });
       setBudgets((prev) => ({ ...prev, [expenseType]: parseFloat(budget) }));
-      toast.success('Budget Set!');
       notification.success({
         message: 'Budget Set',
         description: `Budget for ${expenseType} set to ${budget}`,
@@ -102,7 +109,6 @@ function Dashboard() {
         message: 'Budget Alert',
         description: `You have exceeded your budget for ${tag}!`,
       });
-      toast.warning(`You have exceeded your budget for ${tag}!`);
     }
   };
 
@@ -185,7 +191,25 @@ function Dashboard() {
             showIncomeModal={showIncomeModal}
             resetBalance={resetBalance}
           />
-          {transactions.length !== 0 ? <ChartComponent sortedTransactions={sortedTransactions}/> :<NoTransactions /> }
+          <div className="chart-budget-container">
+            <Button type="primary" className="budget-button" onClick={showBudgetModal}>
+              Set Budget
+            </Button>
+            <Button type="primary" className="report-button" onClick={showReportModal}>
+              View Report
+            </Button>
+          </div>
+          <div className="current-budgets">
+            <h2>Current Budgets</h2>
+            <ul>
+              {Object.keys(budgets).map((tag) => (
+                <li key={tag}>
+                  {tag}: ${budgets[tag].toFixed(2)}
+                </li>
+              ))}
+            </ul>
+          </div>
+          {transactions.length !== 0 ? <ChartComponent sortedTransactions={sortedTransactions}/> : <NoTransactions /> }
           <AddExpenseModal
             isExpenseModalVisible={isExpenseModalVisible}
             handleExpenseCancel={handleExpenseCancel}
@@ -196,25 +220,18 @@ function Dashboard() {
             handleIncomeCancel={handleIncomeCancel}
             onFinish={(values) => onFinish(values, 'income')}
           />
-          <Button type="primary" onClick={showBudgetModal}>
-            Set Budget
-          </Button>
           <BudgetModal
             isVisible={isBudgetModalVisible}
             handleCancel={handleBudgetCancel}
             onFinish={saveBudget}
           />
-          <div>
-            <h2>Current Budgets</h2>
-            <ul>
-              {Object.keys(budgets).map((tag) => (
-                <li key={tag}>
-                  {tag}: ${budgets[tag].toFixed(2)}
-                </li>
-              ))}
-            </ul>
-          </div>
           <TransactionsTable transactions={transactions} addTransaction={addTransaction} fetchTransactions={fetchTransactions}/>
+          <ReportModal
+            isVisible={isReportModalVisible}
+            handleCancel={handleReportCancel}
+            transactions={transactions}
+            budgets={budgets}
+          />
         </>
       )}
     </div>
